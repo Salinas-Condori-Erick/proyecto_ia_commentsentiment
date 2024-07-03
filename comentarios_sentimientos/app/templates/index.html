@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Comentario y Análisis de Sentimientos</title>
+    <style>
+      .rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+      }
+      .rating input {
+        display: none;
+      }
+      .rating label {
+        font-size: 2em;
+        color: #ffd700;
+        cursor: pointer;
+      }
+      .rating label:hover,
+      .rating label:hover ~ label,
+      .rating input:checked ~ label {
+        color: #ffed85;
+      }
+      #message {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ingresa tu comentario</h1>
+    <form id="commentForm">
+      <label for="usuario">Usuario:</label><br />
+      <input type="text" id="usuario" name="usuario" /><br /><br />
+      <label for="comentario">Comentario:</label><br />
+      <textarea id="comentario" name="comentario"></textarea><br /><br />
+      <div class="rating">
+        <input type="radio" name="estrellas" id="star1" value="5" /><label
+          for="star1"
+          >★</label
+        >
+        <input type="radio" name="estrellas" id="star2" value="4" /><label
+          for="star2"
+          >★</label
+        >
+        <input type="radio" name="estrellas" id="star3" value="3" /><label
+          for="star3"
+          >★</label
+        >
+        <input type="radio" name="estrellas" id="star4" value="2" /><label
+          for="star4"
+          >★</label
+        >
+        <input type="radio" name="estrellas" id="star5" value="1" /><label
+          for="star5"
+          >★</label
+        >
+      </div>
+      <button type="button" onclick="submitComment()">Enviar</button>
+      <button type="button" onclick="window.location.href='/comments'">
+        Listar Comentarios
+      </button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+      function submitComment() {
+        const usuario = document.getElementById("usuario").value;
+        const comentario = document.getElementById("comentario").value;
+        const estrellas = document.querySelector(
+          'input[name="estrellas"]:checked'
+        ).value;
+
+        const formData = new FormData();
+        formData.append("usuario", usuario);
+        formData.append("comentario", comentario);
+        formData.append("estrellas", estrellas);
+
+        fetch("/submit_comment", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              document.getElementById("message").innerText =
+                data.message || "Comentario enviado exitosamente.";
+              resetForm();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      function resetForm() {
+        document.getElementById("usuario").value = "";
+        document.getElementById("comentario").value = "";
+        const estrellas = document.querySelector(
+          'input[name="estrellas"]:checked'
+        );
+        if (estrellas) {
+          estrellas.checked = false;
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Comentarios Buenos</title>
+    <style>
+      #comments {
+        margin-top: 20px;
+      }
+      .comment {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Comentarios Buenos</h1>
+    <div id="comments"></div>
+    <button type="button" onclick="window.location.href='/'">Regresar</button>
+    <button type="button" onclick="loadComments()">
+      Refrescar Comentarios
+    </button>
+
+    <script>
+      function loadComments() {
+        fetch("/get_comments")
+          .then((response) => response.json())
+          .then((comments) => {
+            const commentsDiv = document.getElementById("comments");
+            commentsDiv.innerHTML = "";
+            comments.forEach((comment) => {
+              const commentDiv = document.createElement("div");
+              commentDiv.classList.add("comment");
+              commentDiv.innerHTML = `<strong>${comment.usuario}</strong><p>${comment.comentario}</p><p>Estrellas: ${comment.estrellas}</p>`;
+              commentsDiv.appendChild(commentDiv);
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Load comments when the page loads
+      document.addEventListener("DOMContentLoaded", loadComments);
+    </script>
+  </body>
+</html>
